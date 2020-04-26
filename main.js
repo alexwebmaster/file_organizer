@@ -16,7 +16,7 @@ require('electron-reload')(__dirname, {ignored: /node_modules|[\/\\]\./});
 //Functions
 const createWindow = () => {
 
-  win = new BrowserWindow({ width: 800, height: 600, show: false, webPreferences: { preload: path.join(__dirname, 'renderer.js'), nodeIntegration: true } });
+  win = new BrowserWindow({ width: 1200, height: 600, show: false, webPreferences: { preload: path.join(__dirname, 'renderer.js'), nodeIntegration: true } });
   win.once("ready-to-show", () => win.show());
   win.on("closed", () => (win = null));
   win.removeMenu();
@@ -57,9 +57,22 @@ ipcMain.on("asynchronous-message", (event, arg) => {
 //changed copy method to be sync
 ipcMain.on('copy_file', (event, file) => {
 
-  if (1==1) {
-    event.returnValue = { status : 'success', file : file };
-  } else {
-    event.returnValue = { status : 'error', file : file };
-  }
+    // console.log(file);
+
+    var f = path.basename(file.source);
+    var source = fs.createReadStream(file.source);
+
+    if ( !fs.existsSync( file.destination ) ) {
+        fs.mkdirSync( file.destination , { recursive: true } );
+    }
+    var dest = fs.createWriteStream(path.resolve(file.destination, f));
+
+    source.pipe(dest);
+    source.on('end', function() { 
+      event.returnValue = { status : 'success', file : file };
+    });
+    source.on('error', function(err) { 
+      event.returnValue = { status : 'error', file : file };
+      console.log(err);
+     });
 });

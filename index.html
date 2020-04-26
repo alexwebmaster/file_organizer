@@ -80,6 +80,7 @@
                 <tr>
                   <th>File</th>
                   <th>Size</th>
+                  <th>Date</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -87,6 +88,7 @@
                 <tr v-for="file in fileList">
                   <td>{{ file.path }}</td>
                   <td>{{ file.size }}</td>
+                  <td>{{ file.date.toLocaleString() }}</td>
                   <td>{{ file.status }}</td>
                 </tr>
               </tbody>
@@ -115,7 +117,7 @@
       var app = new Vue({
         el: '#app',
         data: {
-          baseFolder : '',
+          base_folder : '',
           output_folder : '',
           input_folder : '',
           format : '',
@@ -128,13 +130,14 @@
             let files = event.target.files;
 
             if (files[0]) {
-              this.create_file_list(files);
               this.input_folder = this.get_folder(files[0]);
 
               let parent_folder = this.get_parent_folder(files[0]);
               if (this.output_folder =='') this.output_folder = parent_folder+'output\\' ;
 
-              this.baseFolder = this.input_folder.replace( parent_folder, '').replace('\\', '');
+              this.base_folder = this.input_folder.replace( parent_folder, '').replace('\\', '');
+
+              this.create_file_list(files);
             }
             else 
             {
@@ -161,8 +164,10 @@
                 let timestamp = new Date().getTime();
                 let file = { 
                   id : timestamp.toString(),
-                  path : files[i].webkitRelativePath.replace('/', '\\'),
+                  name : files[i].name,
+                  path : files[i].webkitRelativePath.replace('/', '\\').replace(this.base_folder+'\\', ''),
                   size : (files[i].size/ 1024/1024).toFixed(2)+' MB',
+                  date : new Date(files[i].lastModified),
                   status : 'Pending',
                 };
                 this.fileList.push(file);
@@ -175,7 +180,7 @@
           },
           get_folder(file)
           {
-            let folder = this.get_parent_folder(file).split('/');
+            let folder = file.webkitRelativePath.replace('/', '\\').split('\\');
             return file.path.replace(folder[1], '');
           },
           process_list()
@@ -187,10 +192,23 @@
           },
           __process_list()
           {
+            let use_day = true;
+            let use_month = (this.format == 'mm-dd' || this.format == 'yyyy-mm-dd') ? true : false ;
+            let use_year = (this.format == 'yyyy-mm-dd') ? true : false ;
+
             for (var i = this.fileList.length - 1; i >= 0; i--) {
+              
+              this.fileList[i].status = 'Processing';
+
+              let year = (use_year) ? this.fileList[i].date.getFullYear()+'\\': '';
+              let month = (use_month) ? (this.fileList[i].date.getMonth()+1)+'\\': '';
+              let day = this.fileList[i].date.getDate()+'\\';
+
+              let destination = this.output_folder+year+month+day;
+
               let result = ipcRenderer.sendSync('copy_file', {
-                source : this.fileList[i].path,
-                destination : this.output_folder,
+                source : this.input_folder+this.fileList[i].path,
+                destination : destination,
                 id : this.fileList[i].id
               });
               // console.log(result);
@@ -200,10 +218,8 @@
                 this.fileList[i].status = 'Falied';                
               }
             }
-          },
-          __update_status(file)
-          {
-            fore
+
+            alert('Process finished!');
           }
         }
       })
