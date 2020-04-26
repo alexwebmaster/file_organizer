@@ -7,16 +7,11 @@
     <link rel="stylesheet" href="assets/css/photon.min.css">
 
     <!-- Javascript -->
-    <script src="assets/js/script.js" charset="utf-8"></script>
+    <script src="assets/js/vue.min.js" charset="utf-8"></script>
 
-    <script language="JavaScript">
-      function getFolder(){
-        return showModalDialog("folderDialog.html","","width:400px;height:400px;resizeable:yes;");
-      }
-    </script>
   </head>
   <body>
-    <div class="window">
+    <div class="window" id="app">
 
       <!-- .toolbar-header sits at the top of your app -->
       <!-- <header class="toolbar toolbar-header">
@@ -34,24 +29,24 @@
               <span class="nav-group-item">
                 <span class="icon icon-home"></span>
                 <label class="btn btn-default" for="input_folder_select">Input Folder</label><br>
-                <input type="file" id="input_folder_select" webkitdirectory directory multiple style="display: none;" />
+                <input type="file" id="input_folder_select" webkitdirectory directory multiple style="display: none;" v-on:change="load_input_folder" />
               </span>
-              <span class="nav-group-item" id="input_folder_label"></span>
+              <span class="nav-group-item">{{input_folder}}</span>
               <hr>
               <span class="nav-group-item">
                 <span class="icon icon-folder"></span>
                 <label class="btn btn-default" for="output_folder_select" >Output Folder</label><br>
-                <input type="file" id="output_folder_select" webkitdirectory directory multiple style="display: none;" />
+                <input type="file" id="output_folder_select" webkitdirectory directory multiple style="display: none;" v-on:change="load_output_folder" />
               </span>
               <span class="nav-group-item">
-                <input type="text" name="output_folder" id="output_folder_label" value="" />
+                <input type="text" name="output_folder" v-model="output_folder" />
               </span>
               <hr>
               <span class="nav-group-item">
                 Format
               </span>
               <span class="nav-group-item">
-                <select class="form-control" id="format_select">
+                <select class="form-control" v-model="format">
                   <option selected="" disabled="">Select</option>
                   <option value="yyyy-mm-dd">yyyy-mm-dd</option>
                   <option value="mm-dd">mm-dd</option>
@@ -62,19 +57,19 @@
               <span class="nav-group-item">
                 <span>Overwrite ?</span><br>
                 <label class="" style="margin-right: 20px;"> 
-                  <input type="radio" name="overwrite" value="1" checked="">
+                  <input type="radio" name="overwrite" value="1" checked="" v-model="overwrite">
                   Yes
                 </label>
 
                 <label> 
-                  <input type="radio" name="overwrite" value="0">
+                  <input type="radio" name="overwrite" value="0" v-model="overwrite">
                   No
                 </label>
               </span>
               <hr>
 
               <span class="nav-group-item">
-                <button id="process_button" class="btn btn-positive">Process List</button>
+                <button v-on:click="processList" class="btn btn-positive">Process List</button>
               </span>
           </div>
 
@@ -88,14 +83,102 @@
                   <th>Status</th>
                 </tr>
               </thead>
+              <tbody>
+                <tr v-for="file in fileList">
+                  <td>{{ file.path }}</td>
+                  <td>{{ file.size }}</td>
+                  <td>{{ file.status }}</td>
+                </tr>
+              </tbody>
             </table>
           </div>
 
 
         </div>
-
       </div>
     </div>
+
+    <script type="text/javascript">
+      
+      var app = new Vue({
+        el: '#app',
+        data: {
+          baseFolder : '',
+          output_folder : '',
+          input_folder : '',
+          format : '',
+          overwrite : 1,
+          fileList: [ ]
+        },
+        methods: {
+          load_input_folder: function (event)
+          {
+            let files = event.target.files;
+            console.log(files);
+
+            if (files[0]) {
+              this.create_file_list(files);
+              this.input_folder = this.get_folder(files[0]);
+
+              let parent_folder = this.get_parent_folder(files[0]);
+              if (this.output_folder =='') this.output_folder = parent_folder+'output\\' ;
+
+              this.baseFolder = folder.replace( parent_folder, '').replace('\\', '');
+            }
+            else 
+            {
+              alert('Empty Folder'); return  false;
+            }
+          },
+          load_output_folder: function (event) 
+          {
+            let files = event.target.files;
+
+            if (files[0]) {
+              this.output_folder = this.get_folder(files[0]);
+            }
+            else 
+            {
+              this.output_folder = this.input_folder+'output\\'  ;
+              alert('Empty Folder, due limitations, please type the path or select another folder.'); return  false;
+            }
+          }, 
+          create_file_list : function(files)
+          {
+            this.fileList = [];
+            for (let i=0; i<files.length; i++) {
+                let file = { 
+                  path : files[i].webkitRelativePath,
+                  size : (files[i].size/ 1024/1024).toFixed(2)+' MB',
+                  status : '',
+                };
+                this.fileList.push(file);
+            };
+            console.log(this.fileList);
+          },
+          get_parent_folder(file)
+          {
+            return file.path.replace(file.webkitRelativePath.replace('/', '\\'), '');  
+          },
+          get_folder(file)
+          {
+            let folder = file.webkitRelativePath.split('/');
+            return file.path.replace(folder[1], '');
+          },
+          processList()
+          {
+            if (this.input_folder =='') { alert('Please select input folder');  return false;}
+            if (this.output_folder == '') { alert('Please provide output folder'); return false; }
+            if (this.format == '') { alert('Please select organization format'); return false; }
+            this.__process_list();
+          },
+          __process_list()
+          {
+            alert('processing...');
+          }
+        }
+      })
+    </script>
 
   </body>
 </html>
