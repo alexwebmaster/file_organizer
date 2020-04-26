@@ -7,7 +7,13 @@
     <link rel="stylesheet" href="assets/css/photon.min.css">
 
     <!-- Javascript -->
-    <script src="js/menu.js" charset="utf-8"></script>
+    <script src="assets/js/script.js" charset="utf-8"></script>
+
+    <script language="JavaScript">
+      function getFolder(){
+        return showModalDialog("folderDialog.html","","width:400px;height:400px;resizeable:yes;");
+      }
+    </script>
   </head>
   <body>
     <div class="window">
@@ -24,25 +30,29 @@
           <div class="pane-sm sidebar" style="width: 35%">
 
             <nav class="nav-group">
-              <h5 class="nav-group-title" style="margin-bottom: 10px;">Configurações</h5>
+              <h5 class="nav-group-title" style="margin-bottom: 10px;">Settings</h5>
               <span class="nav-group-item">
                 <span class="icon icon-home"></span>
-                <button class="btn btn-default" >Pasta de entrada</button>
+                <label class="btn btn-default" for="input_folder_select">Input Folder</label><br>
+                <input type="file" id="input_folder_select" webkitdirectory directory multiple style="display: none;" />
               </span>
               <span class="nav-group-item" id="input_folder_label"></span>
               <hr>
               <span class="nav-group-item">
                 <span class="icon icon-folder"></span>
-                <button class="btn btn-default" >Pasta de Saída</button>
+                <label class="btn btn-default" for="output_folder_select" >Output Folder</label><br>
+                <input type="file" id="output_folder_select" webkitdirectory directory multiple style="display: none;" />
               </span>
-              <span class="nav-group-item" id="output_folder_label"></span>
+              <span class="nav-group-item">
+                <input type="text" name="output_folder" id="output_folder_label" value="" />
+              </span>
               <hr>
               <span class="nav-group-item">
-                Formato de Organização
+                Format
               </span>
               <span class="nav-group-item">
-                <select class="form-control">
-                  <option selected="" disabled="">Selecione</option>
+                <select class="form-control" id="format_select">
+                  <option selected="" disabled="">Select</option>
                   <option value="yyyy-mm-dd">yyyy-mm-dd</option>
                   <option value="mm-dd">mm-dd</option>
                   <option value="dd">dd</option>
@@ -50,31 +60,42 @@
               </span>
               <hr>
               <span class="nav-group-item">
-                <span>Sobrescrever?</span><br>
+                <span>Overwrite ?</span><br>
                 <label class="" style="margin-right: 20px;"> 
                   <input type="radio" name="overwrite" value="1" checked="">
-                  Sim
+                  Yes
                 </label>
 
                 <label> 
                   <input type="radio" name="overwrite" value="0">
-                  Não
+                  No
                 </label>
               </span>
               <hr>
 
               <span class="nav-group-item">
-                <button class="btn btn-positive">Processar Lista</button>
+                <button id="process_button" class="btn btn-positive">Process List</button>
               </span>
           </div>
 
 
-          <div class="pane">...</div>
+          <div class="pane">
+            <table class="table-striped" id="input_listing">
+              <thead>
+                <tr>
+                  <th>File</th>
+                  <th>Size</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
 
 
         </div>
 
       </div>
     </div>
+
   </body>
 </html>

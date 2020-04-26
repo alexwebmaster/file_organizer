@@ -16,11 +16,11 @@ require('electron-reload')(__dirname, {ignored: /node_modules|[\/\\]\./});
 //Functions
 const createWindow = () => {
 
-  win = new BrowserWindow({ width: 800, height: 700, show: false });
+  win = new BrowserWindow({ width: 800, height: 600, show: false });
   win.once("ready-to-show", () => win.show());
   win.on("closed", () => (win = null));
   win.removeMenu();
-  // win.webContents.openDevTools();
+  win.webContents.openDevTools();
 
   win.loadFile("index.html");
 };
