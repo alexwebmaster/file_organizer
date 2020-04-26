@@ -1,0 +1,1 @@
+electron-packager . drm_connect --platform win32 --arch x64 --out dist/ && electron-installer-windows --src dist/drm_connect-win32-x64/ --dest dist/installers/

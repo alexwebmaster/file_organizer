@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>File FX</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="assets/css/photon.min.css">
+
+    <!-- Javascript -->
+    <script src="js/menu.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <div class="window">
+
+      <!-- .toolbar-header sits at the top of your app -->
+      <!-- <header class="toolbar toolbar-header">
+        <h1 class="title">File FX</h1>
+      </header> -->
+
+      <!-- Your app's content goes inside .window-content -->
+      <div class="window-content">
+
+        <div class="pane-group">
+          <div class="pane-sm sidebar" style="width: 35%">
+
+            <nav class="nav-group">
+              <h5 class="nav-group-title" style="margin-bottom: 10px;">Configurações</h5>
+              <span class="nav-group-item">
+                <span class="icon icon-home"></span>
+                <button class="btn btn-default" >Pasta de entrada</button>
+              </span>
+              <span class="nav-group-item" id="input_folder_label"></span>
+              <hr>
+              <span class="nav-group-item">
+                <span class="icon icon-folder"></span>
+                <button class="btn btn-default" >Pasta de Saída</button>
+              </span>
+              <span class="nav-group-item" id="output_folder_label"></span>
+              <hr>
+              <span class="nav-group-item">
+                Formato de Organização
+              </span>
+              <span class="nav-group-item">
+                <select class="form-control">
+                  <option selected="" disabled="">Selecione</option>
+                  <option value="yyyy-mm-dd">yyyy-mm-dd</option>
+                  <option value="mm-dd">mm-dd</option>
+                  <option value="dd">dd</option>
+                </select>
+              </span>
+              <hr>
+              <span class="nav-group-item">
+                <span>Sobrescrever?</span><br>
+                <label class="" style="margin-right: 20px;"> 
+                  <input type="radio" name="overwrite" value="1" checked="">
+                  Sim
+                </label>
+
+                <label> 
+                  <input type="radio" name="overwrite" value="0">
+                  Não
+                </label>
+              </span>
+              <hr>
+
+              <span class="nav-group-item">
+                <button class="btn btn-positive">Processar Lista</button>
+              </span>
+          </div>
+
+
+          <div class="pane">...</div>
+
+
+        </div>
+
+      </div>
+    </div>
+  </body>
+</html>

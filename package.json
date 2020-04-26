@@ -1,0 +1,30 @@
+{
+  "name": "file_organizer",
+  "version": "1.0.0",
+  "description": "Simple app to sort files in folders by date",
+  "main": "main.js",
+  "productName": "file_organizer",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexwebmaster/file_organizer.git"
+  },
+  "keywords": [
+    "File Organizer",
+    "Photo Sort",
+    "File Sort"
+  ],
+  "author": "Alex Gomes",
+  "devDependencies": {
+    "electron": "^7.1.9",
+    "electron-reload": "^1.5.0"
+  },
+  "dependencies": {},
+  "bugs": {
+    "url": "https://github.com/alexwebmaster/file_organizer/issues"
+  },
+  "homepage": "https://github.com/alexwebmaster/file_organizer#readme",
+  "license": "ISC"
+}
