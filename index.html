@@ -69,7 +69,7 @@
               <hr>
 
               <span class="nav-group-item">
-                <button v-on:click="processList" class="btn btn-positive">Process List</button>
+                <button v-on:click="process_list" class="btn btn-positive">Process List</button>
               </span>
           </div>
 
@@ -99,7 +99,19 @@
     </div>
 
     <script type="text/javascript">
-      
+      //Renderer 
+      const { ipcRenderer } = require('electron');
+      const { dialog } = require('electron').remote;
+
+      ipcRenderer.on('dump_reply', (event, result) => {
+          if (result.status !== 'error') {
+          dialog.showMessageBox(null, { type: 'info', title: 'Aviso', message: 'Extração bem sucedida.' });
+          } else {
+          dialog.showMessageBox(null, { type: 'error', title: 'Falha', message: 'Falha na extração dos dados.' });
+          }
+      })
+
+      //Vue
       var app = new Vue({
         el: '#app',
         data: {
@@ -114,7 +126,6 @@
           load_input_folder: function (event)
           {
             let files = event.target.files;
-            console.log(files);
 
             if (files[0]) {
               this.create_file_list(files);
@@ -123,7 +134,7 @@
               let parent_folder = this.get_parent_folder(files[0]);
               if (this.output_folder =='') this.output_folder = parent_folder+'output\\' ;
 
-              this.baseFolder = folder.replace( parent_folder, '').replace('\\', '');
+              this.baseFolder = this.input_folder.replace( parent_folder, '').replace('\\', '');
             }
             else 
             {
@@ -147,10 +158,12 @@
           {
             this.fileList = [];
             for (let i=0; i<files.length; i++) {
+                let timestamp = new Date().getTime();
                 let file = { 
-                  path : files[i].webkitRelativePath,
+                  id : timestamp.toString(),
+                  path : files[i].webkitRelativePath.replace('/', '\\'),
                   size : (files[i].size/ 1024/1024).toFixed(2)+' MB',
-                  status : '',
+                  status : 'Pending',
                 };
                 this.fileList.push(file);
             };
@@ -158,14 +171,14 @@
           },
           get_parent_folder(file)
           {
-            return file.path.replace(file.webkitRelativePath.replace('/', '\\'), '');  
+            return file.path.replace(file.webkitRelativePath.replace('/', '\\'), '');
           },
           get_folder(file)
           {
-            let folder = file.webkitRelativePath.split('/');
+            let folder = this.get_parent_folder(file).split('/');
             return file.path.replace(folder[1], '');
           },
-          processList()
+          process_list()
           {
             if (this.input_folder =='') { alert('Please select input folder');  return false;}
             if (this.output_folder == '') { alert('Please provide output folder'); return false; }
@@ -174,7 +187,23 @@
           },
           __process_list()
           {
-            alert('processing...');
+            for (var i = this.fileList.length - 1; i >= 0; i--) {
+              let result = ipcRenderer.sendSync('copy_file', {
+                source : this.fileList[i].path,
+                destination : this.output_folder,
+                id : this.fileList[i].id
+              });
+              // console.log(result);
+              if (result.status == 'success') {
+                this.fileList[i].status = 'Success';
+              } else {
+                this.fileList[i].status = 'Falied';                
+              }
+            }
+          },
+          __update_status(file)
+          {
+            fore
           }
         }
       })

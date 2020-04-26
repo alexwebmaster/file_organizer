@@ -16,7 +16,7 @@ require('electron-reload')(__dirname, {ignored: /node_modules|[\/\\]\./});
 //Functions
 const createWindow = () => {
 
-  win = new BrowserWindow({ width: 800, height: 600, show: false });
+  win = new BrowserWindow({ width: 800, height: 600, show: false, webPreferences: { preload: path.join(__dirname, 'renderer.js'), nodeIntegration: true } });
   win.once("ready-to-show", () => win.show());
   win.on("closed", () => (win = null));
   win.removeMenu();
@@ -54,24 +54,12 @@ ipcMain.on("asynchronous-message", (event, arg) => {
   if (arg === "quit") app.quit();
 });
 
+//changed copy method to be sync
+ipcMain.on('copy_file', (event, file) => {
 
-
-
-ipcMain.on('exec_dump', async (event, args) => {
-    
-    console.log('Executando consulta...');
-    const params = getParams();
-
-    try {
-            
-      event.reply('dump_reply', 'message');
-
-      return false;
-      
-    } catch (err) {
-      console.log(err);
-      event.reply('dump_reply', 'error');
-      return false;
-    }
-
+  if (1==1) {
+    event.returnValue = { status : 'success', file : file };
+  } else {
+    event.returnValue = { status : 'error', file : file };
+  }
 });
